@@ -90,56 +90,65 @@ def divide(a, b):
 
 #######person 5
 def run_testing_harness():
-    # Automated test harness. Tries a wide range of inputs including:
-    # - Normal integers and floats
-    # - Zero as divisor (triggers safe_divide)
-    # - Strings (triggers validate_inputs -> InvalidInputError)
-    # - Empty string, None, and other bad types
-    
-    test_cases = [
-        (operation_name, a, b, description) 
-        ("add", 5, 3, "normal: 5 + 3 = 8"), 
-        ("subtract", 10, 4, "normal: 10 - 4 = 6"), 
-        ("multiply", 7, 6, "normal: 7 * 6 = 42"), 
-        ("divide", 10, 2, "normal: 10 / 2 = 5.0"), 
-        ("divide", 9, 0, "edge: divide by zero -> Infinity"), 
-        ("divide", 0, 0, "edge: 0 / 0 -> Infinity"), 
-        ("add", "hello", 5, "edge: string arg -> InvalidInputError"), 
-        ("multiply", 3, "x", "edge: string arg -> InvalidInputError"), 
-        ("subtract", "", 2, "edge: empty string -> InvalidInputError"), 
-        ("add", 1.5, 2.5, "normal: floats 1.5 + 2.5 = 4.0"), 
-        ("divide", -10, 2, "normal: negative -10 / 2 = -5.0"), 
-        ("multiply", 0, 100, "normal: multiply by zero 0 * 100 = 0"), 
-        ("subtract", None, 5, "edge: None arg -> InvalidInputError"), 
-        ("add", [1, 2], 3, "edge: list arg -> InvalidInputError"), 
-        ("divide", 5, {}, "edge: dict arg -> InvalidInputError"),
-
+    operations = [
+        ("add", add),
+        ("subtract", subtract),
+        ("multiply", multiply),
+        ("divide", divide),
     ]
 
-print("\n" + "=" * 60)
-print(" TESTING HARNESS — Arithmetic API")
-print("=" * 60)
+    def parse_operand(raw_value):
+        raw_value = raw_value.strip()
+        if raw_value == "":
+            return raw_value
 
-passed = 0
-failed = 0
+        try:
+            if "." in raw_value:
+                return float(raw_value)
+            return int(raw_value)
+        except ValueError:
+            return raw_value
 
-for op_name, a, b, description in test_cases: 
-    func = operations[op_name] 
-    result = func(a, b)
- #Determine pass/fail based on expected outcome in description 
-    if "InvalidInputError" in str(result): 
-        status = "PASS (caught error)" 
-        passed += 1
-    elif result == "Infinity":
-        status = "PASS (safe_divide)"
-        passed += 1
-    elif isinstance(result, (int, float)):
-        status = "PASS"
-        passed += 1
-    else:
-        status = "UNEXPECTED"
-        failed += 1
+    print("\n" + "=" * 60)
+    print(" INTERACTIVE TESTING HARNESS — Arithmetic API")
+    print("=" * 60)
+    print("Type 'quit' at any prompt to stop.\n")
 
-print(f" [{status}] {op_name}({a!r}, {b!r}) -> {result}")
-print(f" {description}")
-print()
+    while True:
+        print("Choose an operation:")
+        for index, (op_name, _) in enumerate(operations, start=1):
+            print(f"  {index}. {op_name}")
+
+        choice_raw = input("Enter the number of the operation: ").strip().lower()
+        if choice_raw in {"quit", "exit", "q"}:
+            break
+
+        try:
+            choice = int(choice_raw)
+        except ValueError:
+            print("Please enter a valid number from the list.\n")
+            continue
+
+        if choice < 1 or choice > len(operations):
+            print("Choice out of range. Please pick a number from the list.\n")
+            continue
+
+        op_name, operation = operations[choice - 1]
+
+        first_raw = input("Enter first value: ")
+        if first_raw.strip().lower() in {"quit", "exit", "q"}:
+            break
+
+        second_raw = input("Enter second value: ")
+        if second_raw.strip().lower() in {"quit", "exit", "q"}:
+            break
+
+        a = parse_operand(first_raw)
+        b = parse_operand(second_raw)
+        result = operation(a, b)
+
+        print(f"Result: {op_name}({a!r}, {b!r}) -> {result}\n")
+
+
+if __name__ == "__main__":
+    run_testing_harness()
