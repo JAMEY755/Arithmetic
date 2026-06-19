@@ -86,3 +86,69 @@ def multiply(a, b):
 def divide(a, b):
     """Returns a divided by b. Returns 'Infinity' if b is zero."""
     return a / b
+
+
+#######person 5
+def run_testing_harness():
+    operations = [
+        ("add", add),
+        ("subtract", subtract),
+        ("multiply", multiply),
+        ("divide", divide),
+    ]
+
+    def parse_operand(raw_value):
+        raw_value = raw_value.strip()
+        if raw_value == "":
+            return raw_value
+
+        try:
+            if "." in raw_value:
+                return float(raw_value)
+            return int(raw_value)
+        except ValueError:
+            return raw_value
+
+    print("\n" + "=" * 60)
+    print(" INTERACTIVE TESTING HARNESS — Arithmetic API")
+    print("=" * 60)
+    print("Type 'quit' at any prompt to stop.\n")
+
+    while True:
+        print("Choose an operation:")
+        for index, (op_name, _) in enumerate(operations, start=1):
+            print(f"  {index}. {op_name}")
+
+        choice_raw = input("Enter the number of the operation: ").strip().lower()
+        if choice_raw in {"quit", "exit", "q"}:
+            break
+
+        try:
+            choice = int(choice_raw)
+        except ValueError:
+            print("Please enter a valid number from the list.\n")
+            continue
+
+        if choice < 1 or choice > len(operations):
+            print("Choice out of range. Please pick a number from the list.\n")
+            continue
+
+        op_name, operation = operations[choice - 1]
+
+        first_raw = input("Enter first value: ")
+        if first_raw.strip().lower() in {"quit", "exit", "q"}:
+            break
+
+        second_raw = input("Enter second value: ")
+        if second_raw.strip().lower() in {"quit", "exit", "q"}:
+            break
+
+        a = parse_operand(first_raw)
+        b = parse_operand(second_raw)
+        result = operation(a, b)
+
+        print(f"Result: {op_name}({a!r}, {b!r}) -> {result}\n")
+
+
+if __name__ == "__main__":
+    run_testing_harness()
